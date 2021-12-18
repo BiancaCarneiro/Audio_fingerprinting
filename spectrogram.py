@@ -2,44 +2,42 @@
 # pip install pydub
 # sudo apt-get install ffmpeg
 # pip install scipy
-import os
-import librosa
-import librosa.display
-import IPython.display as ipd
-import numpy as np 
+import numpy as np      
 import matplotlib.pyplot as plt 
+import scipy.io.wavfile 
+from pydub import AudioSegment    
 from scipy import signal
-from scipy.io import wavfile
-from pydub import AudioSegment
+from scipy.signal import find_peaks
 
-FRAME_SIZE = 2048
-HOP_SIZE = 512
-
-def to_wav(path):                                                            
+def to_wav(path, name):                                                            
     sound = AudioSegment.from_mp3(path)
-    name = path.split("/")[-1]
-    sound.export("wav/"+name, format="wav")
-    return "wav/"+name
+    sound.export("wav/"+name+".wav", format="wav")
+    return "wav/"+name+".wav"
 
-def show_spectrogram(path):
+def create_spectrogram(path):
+    name = path.split("/")[-1][:-4]
+    
     if not path.endswith(".wav"):
         if path.endswith(".mp3"):
-            path = to_wav(path)
+            path = to_wav(path, name)
         else:
             print("ERROR: Nor mp3 or wav")
             return -1
-        
-    ipd.Audio(path)
-    signal, sample_rate = librosa.load(path)
     
-    # Calculando a short-time fourier transform
-    S_scale = librosa.stft(signal, n_fft=FRAME_SIZE, hop_length=HOP_SIZE)    
-    
-    # Calculando o spectrogram
-    Y_scale = np.abs(S_scale)**2
-    Y_scale = librosa.power_to_db(Y_scale)
-    plt.figure(figsize=(25, 10))
-    librosa.display.specshow(Y_scale, sr=sample_rate, hop_length=HOP_SIZE, x_axis="time", y_axis="log")
-    plt.colorbar(format="%+2.f")
-    plt.savefig("spectrogram.png", format="png")
-show_spectrogram("foo.wav")
+    rate, data = scipy.io.wavfile.read(path)        
+    data_1D = data.flatten()
+    plt.specgram(data_1D, NFFT = 64, Fs = 64, noverlap=32)  
+    plt.savefig(name+"_spectrogram.png", format="png")  
+    get_peaks(data,name)
+
+def get_peaks(audio, name):
+    peaks = np.argmax(audio, axis=1)
+    plt.plot(peaks)
+    plt.savefig(name+"_peaks.png", format="png")  
+
+if __name__ == '__main__':   
+    create_spectrogram("mp3/01_Do_I_Wanna_Know.mp3")    
+    create_spectrogram("mp3/dirty-paws.mp3") 
+    create_spectrogram("mp3/02_R_U_Mine.mp3")   
+
+
