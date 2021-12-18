@@ -21,8 +21,7 @@ def create_spectrogram(path):
         if path.endswith(".mp3"):
             path = to_wav(path, name)
         else:
-            print("ERROR: Nor mp3 or wav")
-            return -1
+            raise ValueError ("Nor mp3 or wav")
     
     rate, data = scipy.io.wavfile.read(path)        
     data_1D = data.flatten()
@@ -36,3 +35,10 @@ def get_peaks(audio, name):
     fig_peak = plt.figure()
     plt.plot(peaks)
     fig_peak.savefig("peaks/" + name + "_peaks.png", format="png")
+    
+def hash_function(peaks):
+    # Pelo que eu enetendi, temos que criar uma função que modifique os picos e retorne um array
+    # Se duas entradas iguais entrarem nessa função, a saida tem que ser a mesma
+    # Depois disso é só criar a database
+    
+    return peaks
