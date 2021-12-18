@@ -27,16 +27,16 @@ def create_spectrogram(path):
     rate, data = scipy.io.wavfile.read(path)        
     data_1D = data.flatten()
     plt.specgram(data_1D, NFFT = 64, Fs = 64, noverlap=32)  
-    plt.savefig(name+"_spectrogram.png", format="png")  
+    plt.savefig("spectrograms/" + name + "_spectrogram.png", format="png")  
     get_peaks(data,name)
 
 def get_peaks(audio, name):
     peaks = np.argmax(audio, axis=1)
     plt.plot(peaks)
-    plt.savefig(name+"_peaks.png", format="png")  
+    plt.savefig("peaks/" + name + "_peaks.png", format="png")  
 
 if __name__ == '__main__':   
-    create_spectrogram("mp3/01_Do_I_Wanna_Know.mp3")    
+    create_spectrogram("foo.wav")    
     create_spectrogram("mp3/dirty-paws.mp3") 
     create_spectrogram("mp3/02_R_U_Mine.mp3")   
 
