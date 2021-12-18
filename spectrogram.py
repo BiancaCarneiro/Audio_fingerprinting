@@ -45,7 +45,7 @@ def create_spectrogram(path):
     plt.tight_layout()
     fig_spec.savefig("spectrograms/" + name + "_spectrogram.png", format="png")  
     
-    get_peaks(data_1D,name) 
+    get_peaks(Y_scale,name) 
     
 def get_peaks(audio, name):
     peaks = np.argmax(audio, axis=1)
