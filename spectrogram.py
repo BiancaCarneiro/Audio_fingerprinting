@@ -5,9 +5,16 @@
 import numpy as np      
 import matplotlib.pyplot as plt 
 import scipy.io.wavfile 
+import librosa
+import librosa.display
+from matplotlib import cm
 from pydub import AudioSegment    
 from scipy import signal
 from scipy.signal import find_peaks
+from scipy.fft import fft, ifft
+
+FRAME_SIZE = 2048
+HOP_SIZE = 512
 
 def to_wav(path, name):                                                            
     sound = AudioSegment.from_mp3(path)
@@ -23,12 +30,22 @@ def create_spectrogram(path):
         else:
             raise ValueError ("Nor mp3 or wav")
     
-    rate, data = scipy.io.wavfile.read(path)        
-    data_1D = data.flatten()
+    data, rate = librosa.load(path) 
+    
+    #data_1D = fft(data)
+    
+    data_1D = librosa.stft(data, n_fft=FRAME_SIZE, hop_length=HOP_SIZE)    
+    Y_scale = np.abs(data_1D)**2
+    Y_scale = librosa.power_to_db(Y_scale,ref=np.max)
+    
     fig_spec = plt.figure()
-    plt.specgram(data_1D, NFFT = 64, Fs = 64, noverlap=32)  
+    librosa.display.specshow(Y_scale,sr=rate, hop_length=HOP_SIZE, x_axis="time", y_axis="log",cmap=cm.jet)
+    plt.title("Spectrogram of " + name)
+    plt.colorbar(format='%+02.0f dB')
+    plt.tight_layout()
     fig_spec.savefig("spectrograms/" + name + "_spectrogram.png", format="png")  
-    get_peaks(data,name) 
+    
+    get_peaks(data_1D,name) 
     
 def get_peaks(audio, name):
     peaks = np.argmax(audio, axis=1)
