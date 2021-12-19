@@ -2,6 +2,7 @@
 # pip install pydub
 # sudo apt-get install ffmpeg
 # pip install scipy
+from joblib.logger import PrintTime
 import numpy as np      
 import matplotlib.pyplot as plt 
 import scipy.io.wavfile 
@@ -23,7 +24,7 @@ def to_wav(path, name):
 
 def create_spectrogram(path):
     name = path.split("/")[-1][:-4]
-    
+    print("Estou rodando " + name)
     if not path.endswith(".wav"):
         if path.endswith(".mp3"):
             path = to_wav(path, name)
@@ -37,25 +38,21 @@ def create_spectrogram(path):
     data_1D = librosa.stft(data, n_fft=FRAME_SIZE, hop_length=HOP_SIZE)    
     Y_scale = np.abs(data_1D)**2
     Y_scale = librosa.power_to_db(Y_scale,ref=np.max)
-    
     fig_spec = plt.figure()
     librosa.display.specshow(Y_scale,sr=rate, hop_length=HOP_SIZE, x_axis="time", y_axis="log",cmap=cm.jet)
     plt.title("Spectrogram of " + name)
     plt.colorbar(format='%+02.0f dB')
     plt.tight_layout()
-    fig_spec.savefig("spectrograms/" + name + "_spectrogram.png", format="png")  
+    fig_spec.savefig("spectrograms/" + name + "_spectrogram.png", format="png") 
     
-    get_peaks(Y_scale,name) 
+    #plt.plot(peaks, "o", color="black")
+    #fig_spec.savefig("peaks/" + name + "_peaks.png", format="png")
     
-def get_peaks(audio, name):
-    peaks = np.argmax(audio, axis=1)
-    fig_peak = plt.figure()
-    plt.plot(peaks)
-    fig_peak.savefig("peaks/" + name + "_peaks.png", format="png")
+
     
 def hash_function(peaks):
     # Pelo que eu enetendi, temos que criar uma função que modifique os picos e retorne um array
     # Se duas entradas iguais entrarem nessa função, a saida tem que ser a mesma
     # Depois disso é só criar a database
     
-    return peaks
+    return 
