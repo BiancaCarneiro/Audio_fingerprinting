@@ -83,11 +83,6 @@ def conv2Mono(sample):
         sample = sample[0]
     return sample
 
-sample, sample_rate = librosa.load("wav/01_Do_I_Wanna_Know.wav", sr=None) #Carrega o arquivo
-# print(len(sample)/sample_rate/60, 0.037*5500/60)
-# sample = conv2Mono(sample[:int(sample_rate*0.037)*5500])
-fing = fingerprint([sample],sample_rate,1,len(sample)) # Faz a fingerprint
-
 def cmpFing(f1, f2):
     # print(type(f1))
     f1 = np.reshape(np.array(f1), -1) # Linearizar
@@ -111,36 +106,49 @@ def cmpFing(f1, f2):
     
     return max(scipy.fft.ifft(f1[:int(len(f1)/2)] * f2[:int(len(f2)/2)])) # Convolução no dominio do tempo -> multiplicação no dominio da frequência
 
-df = pd.read_csv("Fingerprint_database.csv")
 
-maxindex = -1
-maxpeak = 0
-peaklist = []
+def do_match(path):
+    name = path.split("/")[-1][:-4]
+    if not path.endswith(".wav"):
+        if path.endswith(".mp3"):
+            path = to_wav(path, name)
+        else:
+            raise ValueError ("Nor mp3 or wav")
+    sample, sample_rate = librosa.load(path, sr=None) #Carrega o arquivo
+    # print(len(sample)/sample_rate/60, 0.037*5500/60)
+    # sample = conv2Mono(sample[:int(sample_rate*0.037)*5500])
+    fing = fingerprint([sample],sample_rate,1,len(sample)) # Faz a fingerprint
 
-for i, f in enumerate(df["Fingerprint"]):
-    f = [int(x) for x in f.replace('[', '').replace(']','').split(',')]
-    peaklist.append((cmpFing(f, fing), i))
+    df = pd.read_csv("Fingerprint_database.csv")
 
-peaklist.sort(key = (lambda a: a[0]))
-print(len(peaklist))
-_, x = peaklist[-1]
-nome_musica = df["Name"][x]
-nome_musica = nome_musica.split(" ")
-info_df = pd.read_csv("get_info_to_database/get_info_to_database/info.csv")
-salva_nome = ""
-for nome_info in info_df["Nome"]:
-    salva_nome = nome_info
-    aux_match = nome_info.lower()
-    aux_match = aux_match.split(" ")
-    count = 0
-    i = 0
-    while i < len(aux_match) and i < len(nome_musica):
-        if aux_match[i] == nome_musica[i]:
-            count+=1
-        i+=1
-    if count >= len(aux_match)/2:
-        print(count)
-        break
-print(salva_nome)
-print(info_df.loc[info_df["Nome"]==salva_nome])
-# print("Escolhido:", df["Name"][maxindex])
+    maxindex = -1
+    maxpeak = 0
+    peaklist = []
+
+    for i, f in enumerate(df["Fingerprint"]):
+        f = [int(x) for x in f.replace('[', '').replace(']','').split(',')]
+        peaklist.append((cmpFing(f, fing), i))
+
+    peaklist.sort(key = (lambda a: a[0]))
+    #print(len(peaklist))
+    _, x = peaklist[-1]
+    nome_musica = df["Name"][x]
+    nome_musica = nome_musica.split(" ")
+    info_df = pd.read_csv("get_info_to_database/get_info_to_database/info.csv")
+    salva_nome = ""
+    for nome_info in info_df["Nome"]:
+        salva_nome = nome_info
+        aux_match = nome_info.lower()
+        aux_match = aux_match.split(" ")
+        count = 0
+        i = 0
+        while i < len(aux_match) and i < len(nome_musica):
+            if aux_match[i] == nome_musica[i]:
+                count+=1
+            i+=1
+        if count >= len(aux_match)/2:
+            #print(count)
+            break
+    #print(salva_nome)
+    print(info_df.loc[info_df["Nome"]==salva_nome])
+    # print("Escolhido:", df["Name"][maxindex])
