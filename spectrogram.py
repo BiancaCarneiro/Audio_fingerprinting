@@ -2,17 +2,12 @@
 # pip install pydub
 # sudo apt-get install ffmpeg
 # pip install scipy
-from joblib.logger import PrintTime
 import numpy as np      
 import matplotlib.pyplot as plt 
-import scipy.io.wavfile 
 import librosa
 import librosa.display
 from matplotlib import cm
 from pydub import AudioSegment    
-from scipy import signal
-from scipy.signal import find_peaks
-from scipy.fft import fft, ifft
 
 FRAME_SIZE = 2048
 HOP_SIZE = 512
@@ -33,8 +28,6 @@ def create_spectrogram(path):
     
     data, rate = librosa.load(path) 
     
-    #data_1D = fft(data)
-    
     data_1D = librosa.stft(data, n_fft=FRAME_SIZE, hop_length=HOP_SIZE)    
     Y_scale = np.abs(data_1D)**2
     Y_scale = librosa.power_to_db(Y_scale,ref=np.max)
@@ -45,14 +38,5 @@ def create_spectrogram(path):
     plt.tight_layout()
     fig_spec.savefig("spectrograms/" + name + "_spectrogram.png", format="png") 
     
-    #plt.plot(peaks, "o", color="black")
-    #fig_spec.savefig("peaks/" + name + "_peaks.png", format="png")
-    
 
     
-def hash_function(peaks):
-    # Pelo que eu enetendi, temos que criar uma função que modifique os picos e retorne um array
-    # Se duas entradas iguais entrarem nessa função, a saida tem que ser a mesma
-    # Depois disso é só criar a database
-    
-    return 

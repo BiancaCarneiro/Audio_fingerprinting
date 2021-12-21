@@ -111,13 +111,9 @@ def cmpFing(f1, f2):
 def do_match(path):
     dt = time.time()
     name = path.split("/")[-1][:-4]
-    if not path.endswith(".wav"):
-        if path.endswith(".mp3"):
-            path = to_wav(path, name)
-        else:
-            raise ValueError ("Nor mp3 or wav")
+    
     sample, sample_rate = librosa.load(path, sr=None) #Carrega o arquivo
-    print('Duração do som:', int(len(sample)/sample_rate/60),':', int(len(sample)/sample_rate%60))
+    #print('Duração do som:', int(len(sample)/sample_rate/60),':', int(len(sample)/sample_rate%60))
     # print(len(sample)/sample_rate/60, 0.037*5500/60)
     # sample = conv2Mono(sample[:int(sample_rate*0.037)*5500])
     fing = fingerprint([sample],sample_rate,1,len(sample)) # Faz a fingerprint
@@ -136,6 +132,7 @@ def do_match(path):
     #print(len(peaklist))
     _, x = peaklist[-1]
     nome_musica = df["Name"][x]
+    print([df["Name"][a] for _,a in peaklist])
     nome_musica = nome_musica.split(" ")
     info_df = pd.read_csv("get_info_to_database/get_info_to_database/info.csv")
     salva_nome = ""
@@ -156,4 +153,4 @@ def do_match(path):
     print(info_df.loc[info_df["Nome"]==salva_nome])
     # print("Escolhido:", df["Name"][maxindex])
 
-    print("Finalizado em ", int((time.time()-dt)/60), ':', int((time.time()-dt)%60))
+    #print("Finalizado em ", int((time.time()-dt)/60), ':', int((time.time()-dt)%60))
