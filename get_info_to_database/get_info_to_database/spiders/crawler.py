@@ -8,7 +8,8 @@ class GetInfoSpider(scrapy.Spider):
     start_urls = [
         "https://www.vagalume.com.br/arctic-monkeys/discografia/am.html",
         "https://www.vagalume.com.br/of-monsters-and-men/discografia/my-head-is-an-animal.html",
-        "https://www.vagalume.com.br/anitta/discografia/kisses.html"
+        "https://www.vagalume.com.br/anitta/discografia/kisses.html",
+        "https://www.vagalume.com.br/alceu-valenca/discografia/cavalo-de-pau.html"
     ]
 
     def parse(self, response):
