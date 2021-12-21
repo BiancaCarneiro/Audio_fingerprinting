@@ -7,6 +7,7 @@ import librosa.display
 import pandas as pd
 import os
 from spectrogram import to_wav
+import time
 
 def treat(timeframe_bands)->np.ndarray:
     bands = len(timeframe_bands[0]) -1#24
@@ -108,6 +109,7 @@ def cmpFing(f1, f2):
 
 
 def do_match(path):
+    dt = time.time()
     name = path.split("/")[-1][:-4]
     if not path.endswith(".wav"):
         if path.endswith(".mp3"):
@@ -115,6 +117,7 @@ def do_match(path):
         else:
             raise ValueError ("Nor mp3 or wav")
     sample, sample_rate = librosa.load(path, sr=None) #Carrega o arquivo
+    print('Duração do som:', int(len(sample)/sample_rate/60),':', int(len(sample)/sample_rate%60))
     # print(len(sample)/sample_rate/60, 0.037*5500/60)
     # sample = conv2Mono(sample[:int(sample_rate*0.037)*5500])
     fing = fingerprint([sample],sample_rate,1,len(sample)) # Faz a fingerprint
@@ -152,3 +155,5 @@ def do_match(path):
     #print(salva_nome)
     print(info_df.loc[info_df["Nome"]==salva_nome])
     # print("Escolhido:", df["Name"][maxindex])
+
+    print("Finalizado em ", int((time.time()-dt)/60), ':', int((time.time()-dt)%60))
