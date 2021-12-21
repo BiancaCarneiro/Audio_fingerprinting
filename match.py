@@ -122,6 +122,25 @@ for i, f in enumerate(df["Fingerprint"]):
     peaklist.append((cmpFing(f, fing), i))
 
 peaklist.sort(key = (lambda a: a[0]))
-
-print([df["Name"][x] for _ , x in peaklist])
+print(len(peaklist))
+_, x = peaklist[-1]
+nome_musica = df["Name"][x]
+nome_musica = nome_musica.split(" ")
+info_df = pd.read_csv("get_info_to_database/get_info_to_database/info.csv")
+salva_nome = ""
+for nome_info in info_df["Nome"]:
+    salva_nome = nome_info
+    aux_match = nome_info.lower()
+    aux_match = aux_match.split(" ")
+    count = 0
+    i = 0
+    while i < len(aux_match) and i < len(nome_musica):
+        if aux_match[i] == nome_musica[i]:
+            count+=1
+        i+=1
+    if count >= len(aux_match)/2:
+        print(count)
+        break
+print(salva_nome)
+print(info_df.loc[info_df["Nome"]==salva_nome])
 # print("Escolhido:", df["Name"][maxindex])
