@@ -2,7 +2,8 @@ import librosa
 import os
 import numpy as np
 import pandas as pd
-from match import fingerprint
+from func_assinaturas import fingerprint
+from spectrogram import to_wav
 
 def create_database():
     data = {
@@ -16,6 +17,7 @@ def create_database():
     for name in mp3s:
         mp3_path = "mp3/" + name
         name_musica = name[:-4]
+        mp3_path = to_wav(mp3_path, name_musica)
         sample, sample_rate = librosa.load(mp3_path, sr=None) #Carrega o arquivo
         fing = fingerprint([sample],sample_rate,1,len(sample))
         print(np.shape(fing))
@@ -23,6 +25,8 @@ def create_database():
         name_musica = name_musica.replace("_", " ")
         name_musica = name_musica.replace("-", " ")
         data["Name"].append(name_musica.lower())
-    
+        os.remove(mp3_path)
     df = pd.DataFrame.from_dict(data)
     df.to_csv("Fingerprint_database.csv", index=False)
+    
+create_database()

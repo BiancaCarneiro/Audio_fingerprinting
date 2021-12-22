@@ -12,20 +12,19 @@ from pydub import AudioSegment
 FRAME_SIZE = 2048
 HOP_SIZE = 512
 
-def to_wav(path, name):                                                            
-    sound = AudioSegment.from_mp3(path)
-    sound.export("wav/"+name+".wav", format="wav")
+def to_wav(path, name):                           
+    if not path.endswith(".wav"):
+        if path.endswith(".mp3"):                                 
+            sound = AudioSegment.from_mp3(path)
+            sound.export("wav/"+name+".wav", format="wav")
+        else:
+            raise ValueError ("Nor mp3 or wav")
     return "wav/"+name+".wav"
 
 def create_spectrogram(path):
     name = path.split("/")[-1][:-4]
     print("Estou rodando " + name)
-    if not path.endswith(".wav"):
-        if path.endswith(".mp3"):
-            path = to_wav(path, name)
-        else:
-            raise ValueError ("Nor mp3 or wav")
-    
+        
     data, rate = librosa.load(path) 
     
     data_1D = librosa.stft(data, n_fft=FRAME_SIZE, hop_length=HOP_SIZE)    
