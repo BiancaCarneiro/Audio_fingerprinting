@@ -30,6 +30,8 @@ def cmpFing(f1, f2):
     # print(np.shape(f2))
     # f2/=np.sqrt(len(f2))
 
+    f2 = f2[::-1]
+
     f1 = np.append(f1, np.zeros(max(len(f1),len(f2))-len(f1))) # Preencher com 0s
     f2 = np.append(f2, np.zeros(max(len(f1),len(f2))-len(f2)))
 
@@ -52,6 +54,9 @@ def do_match(path):
     #print('Duração do som:', int(len(sample)/sample_rate/60),':', int(len(sample)/sample_rate%60))
     # print(len(sample)/sample_rate/60, 0.037*5500/60)
     # sample = conv2Mono(sample[:int(sample_rate*0.037)*5500])
+
+    sample = sample[int(len(sample)/2):int(len(sample)/1.5)] # Obter apenas um trecho da música
+
     fing = fingerprint([sample],sample_rate,1,len(sample)) # Faz a fingerprint
 
     df = pd.read_csv("Fingerprint_database.csv")
